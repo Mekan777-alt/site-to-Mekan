@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Личный сайт студента GeekBrains</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="content">
+        <div class="header">
+            <a href="index.html">Главная</a>
+            <a href="puzzle.html">Загадки</a>
+            <a href="guess.html">Угадайка</a>
+            <a href="#">Угадайка мультиплеер</a>
+            <a href="gen.html">Генератор случайных паролей</a>
+        </div>
+    <script type="text/javascript">
+        "use strict";
+ 
+        class Game {
+            constructor(players, attemptsEP) {
+                this.players = players;
+                this.maxTryCount = players.length * attemptsEP; // Количество попыток
+                this.tryCount = 0;
+                this.current = Math.floor(Math.random() * Math.floor(players.length)); // Выбираем первого ходящего - игрока
+                this.answer = Math.floor(Math.random() * 100);
+                this.init();
+                window.console.log(this.answer); // Ответ
+            }
+ 
+            init() {
+                document.getElementById("btnAnswer").addEventListener("click", this.guess.bind(this));
+                this.updUserInfo();
+            }
+ 
+            updUserInfo() {
+                document.getElementById("user").textContent = `Ход игрока: ${this.players[this.current].name}`;
+                document.getElementById("userAnswer").value = "";
+            }
+ 
+            getPlayerAnswer() {
+                return parseInt(document.getElementById("userAnswer").value);
+            }
+ 
+            guess() {
+                let userAnswer = this.getPlayerAnswer();
+                if (isNaN(userAnswer)) return false;
+                this.tryCount++;
+                if (userAnswer === this.answer) {
+                    write(`<b>Поздравляю! Победил игрок </b> <a style="color: green">${this.players[this.current].name}</a>`);
+                    hide(["btnAnswer", "userAnswer", "user"]);
+                } else if (this.tryCount >= this.maxTryCount) {
+                    hide(["btnAnswer", "userAnswer", "user"]);
+                    write(`Победителей нет. Ответ: ${this.answer}`);
+                } else if (userAnswer > this.answer) {
+                    write("Вы ввели слишком большое число<br>Попробуйте еще раз. Введите число от 1 до 100");
+                } else if (userAnswer < this.answer) {
+                    write("Вы ввели слишком маленькое число<br>Попробуйте еще раз. Введите число от 1 до 100");             
+                }
+                this.current = ++this.current >= this.players.length ? 0 : this.current;
+                this.updUserInfo();
+            }
+        }
+        
+ 
+        // Игроки
+        let users = [ 
+            { name: "Vasya"}, 
+            { name: "Petya" },
+            { name: "Bacila" },
+            { name: "Vladimir" }
+        ];
+ 
+        let attempts = 2; // Сколько попыток у каждого игрока...
+ 
+        new Game(users, attempts); 
+ 
+        function hide(ids)  { ids.forEach((id) => document.getElementById(id).style.display = "none"); }
+        function write(text) { document.getElementById("info").innerHTML = text; }
+    </script>
+</body>
+</html>
